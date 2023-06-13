@@ -45,3 +45,5 @@ $BT.Close()
 (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\PowerShell\*\PowerShellEngin e -Name PowerShellVersion).PowerShellVersion
 
 Get-Process notepad | Stop-Process -Force
+
+REG ADD HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /V REDTEAM0N3 /t REG_SZ /F /D "%s"
