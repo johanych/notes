@@ -1,1 +1,2 @@
 holis
+https://raw.githubusercontent.com/johanych/notes/9f223924816d4f16265b15b46d579fd8ad96276e/cmd.exe
