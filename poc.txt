@@ -1,3 +1,4 @@
 holis
 https://raw.githubusercontent.com/johanych/notes/9f223924816d4f16265b15b46d579fd8ad96276e/cmd.exe
 https://app.cymulate.com/api/agent/download?arch=64&os=windows&type=exe&isService=true&isInstaller=true&isExecutor=false
+45f3cbc8ddb182254d97dd777bd9ab6b914797b6
