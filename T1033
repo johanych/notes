@@ -1,0 +1,59 @@
+@echo off
+setlocal enabledelayedexpansion
+
+:: Define el nombre del computador
+set COMPUTER_NAME=%COMPUTERNAME%
+
+:: Crea o limpia el archivo de salida
+echo User Information > user_info.txt
+
+:: whoami para obtener el usuario logueado
+echo. >> user_info.txt
+echo WHOAMI OUTPUT >> user_info.txt
+whoami >> user_info.txt
+
+:: WMIC para obtener toda la informacion de las cuentas de usuario
+echo. >> user_info.txt
+echo WMIC USERACCOUNT OUTPUT >> user_info.txt
+wmic useraccount get /ALL >> user_info.txt
+
+:: net user para listar las cuentas de usuario
+echo. >> user_info.txt
+echo NET USER OUTPUT >> user_info.txt
+net user >> user_info.txt
+
+:: quser para obtener detalles de los usuarios logueados 
+echo. >> user_info.txt
+echo QUSER OUTPUT >> user_info.txt
+quser >> user_info.txt
+
+:: net session para ver usuarios conectados
+echo. >> user_info.txt
+echo NET SESSION OUTPUT >> user_info.txt
+net session >> user_info.txt
+
+:: qwinsta para ver detalles de sesion
+echo. >> user_info.txt
+echo QWINSTA OUTPUT >> user_info.txt
+qwinsta >> user_info.txt
+
+:: QWINSTA filtrado para ver resultados de usuarios Activos y Desconectados
+echo. >> user_info.txt
+echo FILTERED QWINSTA OUTPUT FOR ACTIVE/DISCONNECTED USERS >> user_info.txt
+for /F "tokens=1,2" %%i in ('qwinsta ^| findstr "Active Disc"') do (
+    echo %%i | find /v "#" | find /v "console" || echo %%j >> user_info.txt
+)
+
+:: Loop que recorre computers.txt y obtiene informacion de ellos
+if exist computers.txt (
+    echo. >> user_info.txt
+    echo AGGREGATED USER NAMES FROM COMPUTERS.TXT >> user_info.txt
+    for /F %%n in (computers.txt) do (
+        for /F "tokens=1,2" %%i in ('qwinsta /server:%%n ^| findstr "Active Disc"') do (
+            echo %%i | find /v "#" | find /v "console" || echo %%j >> user_info.txt
+        )
+    )
+)
+
+echo Script ejecutado satisfactoriamente!
+endlocal
