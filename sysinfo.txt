@@ -1,0 +1,60 @@
+
+Host Name:                 SEG-SEG-TRA-QA-
+OS Name:                   Microsoft Windows 10 Enterprise for Virtual Desktops
+OS Version:                10.0.19045 N/A Build 19045
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Member Server
+OS Build Type:             Multiprocessor Free
+Registered Owner:          N/A
+Registered Organization:   N/A
+Product ID:                00432-70000-00001-AA738
+Original Install Date:     12/8/2022, 9:24:02 PM
+System Boot Time:          9/28/2023, 2:26:26 PM
+System Manufacturer:       Microsoft Corporation
+System Model:              Virtual Machine
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: Intel64 Family 6 Model 85 Stepping 7 GenuineIntel ~2594 Mhz
+BIOS Version:              American Megatrends Inc. 090008 , 12/7/2018
+Windows Directory:         C:\Windows
+System Directory:          C:\Windows\system32
+Boot Device:               \Device\HarddiskVolume1
+System Locale:             en-us;English (United States)
+Input Locale:              en-us;English (United States)
+Time Zone:                 (UTC) Coordinated Universal Time
+Total Physical Memory:     32,768 MB
+Available Physical Memory: 18,198 MB
+Virtual Memory: Max Size:  40,959 MB
+Virtual Memory: Available: 21,685 MB
+Virtual Memory: In Use:    19,274 MB
+Page File Location(s):     D:\pagefile.sys
+Domain:                    uio.bpichincha.com
+Logon Server:              \\AZPRD01C
+Hotfix(s):                 18 Hotfix(s) Installed.
+                           [01]: KB5028951
+                           [02]: KB5000736
+                           [03]: KB5003791
+                           [04]: KB5012170
+                           [05]: KB5015684
+                           [06]: KB5029244
+                           [07]: KB5006753
+                           [08]: KB5011651
+                           [09]: KB5014032
+                           [10]: KB5018506
+                           [11]: KB5020372
+                           [12]: KB5022924
+                           [13]: KB5023794
+                           [14]: KB5025315
+                           [15]: KB5026879
+                           [16]: KB5028318
+                           [17]: KB5028380
+                           [18]: KB5003242
+Network Card(s):           1 NIC(s) Installed.
+                           [01]: Microsoft Hyper-V Network Adapter
+                                 Connection Name: Ethernet 12
+                                 DHCP Enabled:    Yes
+                                 DHCP Server:     168.63.129.16
+                                 IP address(es)
+                                 [01]: 10.222.10.18
+                                 [02]: fe80::993e:12a5:4981:fcdc
+Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed.
