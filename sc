@@ -1,50 +1,38 @@
 import socket
 from ipaddress import ip_network
+import requests
 
-def check_routing(host):
-    """Intenta verificar el enrutamiento hacia una red realizando una solicitud a un puerto específico."""
-    ports = [25, 21, 22, 80]  # SMTP, FTP, SSH
-    for port in ports:
+def scan_network(network, ports):
+    """Escanea los hosts en la red dada en múltiples puertos."""
+    alive_hosts = []
+    for ip in ip_network(network).hosts():
+        for port in ports:
+            try:
+                # Verificación rápida de la disponibilidad del host
+                socket.setdefaulttimeout(1)
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                result = sock.connect_ex((str(ip), port))
+                if result == 0:
+                    print(f"Host activo encontrado en {ip}:{port}")
+                    alive_hosts.append((str(ip), port))
+                sock.close()
+            except socket.error:
+                pass
+    return alive_hosts
+
+def check_web_services(hosts_with_ports):
+    """Revisa la disponibilidad de servicios web en los hosts."""
+    for host, port in hosts_with_ports:
         try:
-            socket.setdefaulttimeout(1)
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            result = sock.connect_ex((host, port))
-            sock.close()
-            if result == 0:
-                print(f"Conectividad confirmada hacia {host} en el puerto {port}")
-                return True
-        except socket.error:
+            if port == 80:  # Ejemplo para HTTP, adaptar según sea necesario
+                response = requests.get(f"http://{host}", timeout=2)
+                if response.status_code == 200:
+                    print(f"Servicio web disponible en: http://{host}")
+        except requests.ConnectionError:
             pass
-    return False
 
-def scan_network(network_base, second_octet_start=1, second_octet_end=254):
-    """Escanea las redes rotando el segundo octeto y verifica los hosts activos en varios puertos."""
-    for second_octet in range(second_octet_start, second_octet_end + 1):
-        network = f"{network_base}.{second_octet}.0/24"
-        gateway_ip = f"{network_base}.{second_octet}.1"
-        print(f"Verificando enrutamiento hacia: {network}")
-        
-        if check_routing(gateway_ip):
-            print(f"Enrutamiento confirmado. Escaneando {network}...")
-            alive_hosts = []
-            for ip in ip_network(network).hosts():
-                for port in [25, 21, 22, 80]:  # Itera sobre los puertos de interés
-                    try:
-                        socket.setdefaulttimeout(1)
-                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        result = sock.connect_ex((str(ip), port))
-                        if result == 0:
-                            print(f"Host activo encontrado en {ip}:{port}")
-                            alive_hosts.append(f"{ip}:{port}")
-                        sock.close()
-                    except socket.error:
-                        pass
-            if alive_hosts:
-                print(f"Hosts activos encontrados: {alive_hosts}")
-            else:
-                print(f"No se encontraron hosts activos en {network}.")
-        else:
-            print(f"No se confirmó enrutamiento hacia {network}. Continuando con la siguiente red.")
-
-#ajustar '10.1' por el primer y segundo octeto base de la red a escanear
-scan_network("10.1")
+# Ejemplo de uso
+network = "192.168.1.0/24"
+ports = [21, 22, 25, 80]  # Lista de puertos a escanear
+alive_hosts_with_ports = scan_network(network, ports)
+check_web_services(alive_hosts_with_ports)
