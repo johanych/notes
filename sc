@@ -1,31 +1,35 @@
-from scapy.all import *
-import ipaddress
+import socket
+import requests
+from ipaddress import ip_network
 
-def discover_network(base_ip):
+def scan_network(network):
+    """Escanea los hosts en la red dada."""
     alive_hosts = []
-    for ip in ipaddress.IPv4Network(base_ip, strict=False):
-        if ip.is_reserved:
-            continue  # Skip reserved IP addresses
-        pkt = IP(dst=str(ip))/ICMP()
-        resp = sr1(pkt, timeout=1, verbose=0)
-        if resp is not None and ICMP in resp:
-            alive_hosts.append(str(ip))
+    for ip in ip_network(network).hosts():
+        try:
+            # Verificación rápida de la disponibilidad del host
+            socket.setdefaulttimeout(1)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            result = sock.connect_ex((str(ip), 80))  # Prueba el puerto 80 como ejemplo
+            if result == 0:
+                print(f"Host activo encontrado: {ip}")
+                alive_hosts.append(str(ip))
+            sock.close()
+        except socket.error:
+            pass
     return alive_hosts
 
-def main():
-    for j in range(1, 255):
-        base_network = f"172.{j}.0.0/16"
-        print(f"-------------------------\nBUSCANDO REDES EN {base_network}\n-------------------------\n")
-        for i in range(0, 255):
-            subnet = f"172.{j}.{i}.0/24"
-            print(f"::Escaneando {subnet}::")
-            alive_hosts = discover_network(subnet)
-            if alive_hosts:
-                print(f">>{subnet}")
-                with open("redes.txt", "a") as file:
-                    file.write(f"{subnet}\n")
-                    for host in alive_hosts:
-                        file.write(f"Host Vivo: {host}\n")
+def check_web_services(hosts):
+    """Revisa la disponibilidad de servicios web en los hosts."""
+    for host in hosts:
+        try:
+            response = requests.get(f"http://{host}", timeout=2)
+            if response.status_code == 200:
+                print(f"Servicio web disponible en: http://{host}")
+        except requests.ConnectionError:
+            pass
 
-if __name__ == "__main__":
-    main()
+# Ejemplo de uso
+network = "192.168.1.0/24"
+alive_hosts = scan_network(network)
+check_web_services(alive_hosts)
