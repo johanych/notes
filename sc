@@ -17,8 +17,11 @@ def scan_network(network, ports):
                         alive_hosts[ip_str].append(port)
                     else:
                         alive_hosts[ip_str] = [port]
+                else:
+                    print(f"No se encontró servicio en {ip_str}:{port}")  # Línea agregada
                 sock.close()
             except socket.error:
+                print(f"Error al conectar con {ip_str}:{port}")  # Mensaje en caso de error de socket
                 continue
     return alive_hosts
 
@@ -42,3 +45,4 @@ network = "192.168.1.0/24"
 ports = [25, 21, 22, 80]  # Puertos a escanear
 alive_hosts = scan_network(network, ports)
 check_services(alive_hosts)
+
