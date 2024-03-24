@@ -1,47 +1,34 @@
 import socket
-from ipaddress import ip_network
+from ipaddress import IPv4Network
 
-def scan_network(network, ports):
+def scan_network(base_network, ports):
     """Escanea los hosts en la red dada y verifica puertos específicos."""
-    alive_hosts = {}
-    for ip in ip_network(network).hosts():
-        ip_str = str(ip)
-        for port in ports:
-            try:
-                socket.setdefaulttimeout(1)
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                result = sock.connect_ex((ip_str, port))
-                if result == 0:
-                    print(f"Host activo encontrado en {ip_str}:{port}")
-                    if ip_str in alive_hosts:
-                        alive_hosts[ip_str].append(port)
-                    else:
-                        alive_hosts[ip_str] = [port]
-                else:
-                    print(f"No se encontró servicio en {ip_str}:{port}")  # Línea agregada
-                sock.close()
-            except socket.error:
-                print(f"Error al conectar con {ip_str}:{port}")  # Mensaje en caso de error de socket
-                continue
-    return alive_hosts
+    # Parse the base network to get the first three octets
+    base_network_obj = IPv4Network(base_network)
+    first_three_octets = str(base_network_obj.network_address)[:-4]  # Remove the last octet
+
+    for third_octet in range(1, 255):  # Iterate through the third octet
+        network = f"{first_three_octets}{third_octet}.0/24"
+        for ip in IPv4Network(network).hosts():
+            ip_str = str(ip)
+            print(f"Validando host: {ip_str}")  # Print the host being validated
+            for port in ports:
+                try:
+                    socket.setdefaulttimeout(1)
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    result = sock.connect_ex((ip_str, port))
+                    if result == 0:
+                        print(f"--> Servicio encontrado en {ip_str}:{port}")
+                    sock.close()
+                except socket.error as e:
+                    continue  # Optionally, handle errors or log them
 
 def check_services(hosts):
     """Revisa la disponibilidad de servicios específicos basándose en el puerto."""
-    for host, ports in hosts.items():
-        for port in ports:
-            service = ""
-            if port == 80:
-                service = "HTTP"
-            elif port == 25:
-                service = "SMTP"
-            elif port == 21:
-                service = "FTP"
-            elif port == 22:
-                service = "SSH"
-            print(f"Servicio {service} disponible en {host}:{port}")
+    # Este código se puede ajustar según la necesidad, dependiendo de los servicios específicos que se estén buscando.
 
 # Ejemplo de uso
-network = "192.168.1.0/24"
+base_network = "192.168.0.0/24"  # Definir la red base para el escaneo
 ports = [25, 21, 22, 80]  # Puertos a escanear
-alive_hosts = scan_network(network, ports)
-check_services(alive_hosts)
+scan_network(base_network, ports)
+
