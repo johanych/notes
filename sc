@@ -1,38 +1,44 @@
 import socket
 from ipaddress import ip_network
-import requests
 
 def scan_network(network, ports):
-    """Escanea los hosts en la red dada en múltiples puertos."""
-    alive_hosts = []
+    """Escanea los hosts en la red dada y verifica puertos específicos."""
+    alive_hosts = {}
     for ip in ip_network(network).hosts():
+        ip_str = str(ip)
         for port in ports:
             try:
-                # Verificación rápida de la disponibilidad del host
                 socket.setdefaulttimeout(1)
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                result = sock.connect_ex((str(ip), port))
+                result = sock.connect_ex((ip_str, port))
                 if result == 0:
-                    print(f"Host activo encontrado en {ip}:{port}")
-                    alive_hosts.append((str(ip), port))
+                    print(f"Host activo encontrado en {ip_str}:{port}")
+                    if ip_str in alive_hosts:
+                        alive_hosts[ip_str].append(port)
+                    else:
+                        alive_hosts[ip_str] = [port]
                 sock.close()
             except socket.error:
-                pass
+                continue
     return alive_hosts
 
-def check_web_services(hosts_with_ports):
-    """Revisa la disponibilidad de servicios web en los hosts."""
-    for host, port in hosts_with_ports:
-        try:
-            if port == 80:  # Ejemplo para HTTP, adaptar según sea necesario
-                response = requests.get(f"http://{host}", timeout=2)
-                if response.status_code == 200:
-                    print(f"Servicio web disponible en: http://{host}")
-        except requests.ConnectionError:
-            pass
+def check_services(hosts):
+    """Revisa la disponibilidad de servicios específicos basándose en el puerto."""
+    for host, ports in hosts.items():
+        for port in ports:
+            service = ""
+            if port == 80:
+                service = "HTTP"
+            elif port == 25:
+                service = "SMTP"
+            elif port == 21:
+                service = "FTP"
+            elif port == 22:
+                service = "SSH"
+            print(f"Servicio {service} disponible en {host}:{port}")
 
 # Ejemplo de uso
 network = "192.168.1.0/24"
-ports = [21, 22, 25, 80]  # Lista de puertos a escanear
-alive_hosts_with_ports = scan_network(network, ports)
-check_web_services(alive_hosts_with_ports)
+ports = [25, 21, 22, 80]  # Puertos a escanear
+alive_hosts = scan_network(network, ports)
+check_services(alive_hosts)
