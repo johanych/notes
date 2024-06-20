@@ -1,3 +1,4 @@
+import os
 import re
 import uuid
 from smbprotocol.connection import Connection
@@ -51,6 +52,16 @@ def search_files(connection, session, tree, path, pattern):
                 file_handle.close()
     dir_handle.close()
 
+def resolve_shortcut(path):
+    # Esta función debería implementarse para resolver el acceso directo.
+    # Sin embargo, esto dependerá del sistema operativo y puede requerir una
+    # solución específica.
+    # Aquí se proporciona un ejemplo simplificado y puede que necesites
+    # ajustar según tu entorno.
+    if os.path.islink(path):
+        return os.readlink(path)
+    return path
+
 def main():
     server = "uio.bpichincha.com"
     share = "\\uio.bpichincha.com\\SYSVOL\\uio.bpichincha.com"
@@ -65,7 +76,8 @@ def main():
         return
 
     try:
-        search_files(connection, session, tree, "", search_pattern)
+        real_path = resolve_shortcut(share)
+        search_files(connection, session, tree, real_path, search_pattern)
     finally:
         tree.disconnect()
         session.disconnect()
