@@ -1,0 +1,3 @@
+
+Failed to connect to SMB share: Received unexpected status from the server: An invalid parameter was passed to a service or function. (3221225485) STATUS_INVALID_PARAMETER: 0xc000000d
+Exiting due to connection failure.
