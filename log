@@ -1,40 +1,13 @@
-
-WARNING: No libpcap provider available ! pcap won't be used
--------------------------
-BUSCANDO REDES EN 172.1.0.0/16
--------------------------
-
-::Escaneando 172.1.0.0/24::
-WARNING: No route found (no default route?)
-WARNING: Dropping unsupported option: filter
-WARNING: Dropping unsupported option: nofilter
 Traceback (most recent call last):
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\scapy\arch\windows\native.py", line 114, in __init__
-    self.ins = socket.socket(af,
-  File "C:\Python310\lib\socket.py", line 232, in __init__
-    _socket.socket.__init__(self, family, type, proto, fileno)
-OSError: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Users\echaconn\Downloads\T1046.py", line 31, in <module>
+  File "C:\Users\echaconn\Downloads\T1552_01.py", line 54, in <module>
     main()
-  File "C:\Users\echaconn\Downloads\T1046.py", line 22, in main
-    alive_hosts = discover_network(subnet)
-  File "C:\Users\echaconn\Downloads\T1046.py", line 10, in discover_network
-    resp = sr1(pkt, timeout=1, verbose=0)
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\scapy\sendrecv.py", line 663, in sr1
-    ans, _ = sr(*args, **kargs)
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\scapy\sendrecv.py", line 650, in sr
-    s = conf.L3socket(promisc=promisc, filter=filter,
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\scapy\arch\windows\native.py", line 122, in __init__
-    raise OSError("Windows native L3 Raw sockets are only "
-OSError: Windows native L3 Raw sockets are only usable as administrator ! Install Winpcap/Npcap to workaround !
-Exception ignored in: <function SuperSocket.__del__ at 0x0000028012464F70>
-Traceback (most recent call last):
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\scapy\supersocket.py", line 274, in __del__
-    self.close()
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\scapy\arch\windows\native.py", line 218, in close
-    self.ins.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
-AttributeError: 'L3WinSocket' object has no attribute 'ins'
+  File "C:\Users\echaconn\Downloads\T1552_01.py", line 44, in main
+    connection, session, tree = connect_to_smb(server, share, username, password)
+  File "C:\Users\echaconn\Downloads\T1552_01.py", line 15, in connect_to_smb
+    tree.connect()
+  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\smbprotocol\tree.py", line 248, in connect
+    response = self.session.connection.receive(request)
+  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\smbprotocol\connection.py", line 1100, in receive
+    raise SMBResponseException(response)
+smbprotocol.exceptions.InvalidParameter: Received unexpected status from the server: An invalid parameter was passed to a service or function. (3221225485) STATUS_INVALID_PARAMETER: 0xc000000d
+
